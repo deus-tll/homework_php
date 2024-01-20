@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Http\Controllers\Auth\Jwt;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Traits\JwtAuthTrait;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
+
+class RegisterController extends Controller
+{
+    use JwtAuthTrait;
+
+    public function register(RegisterRequest $request): JsonResponse
+    {
+        $createdUser = User::query()->create($request->validated());
+
+        $token = $this->generateToken($request->only('email', 'password'));
+
+        return $this->responseWithToken($createdUser, $token, 'User created successfully');
+    }
+}
