@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\Jwt\LogoutController;
 use App\Http\Controllers\Auth\Jwt\ProfileController;
 use App\Http\Controllers\Auth\Jwt\RefreshTokenController;
 use App\Http\Controllers\Auth\Jwt\RegisterController;
+use App\Http\Controllers\Auth\VerifyUserEmailController;
 use App\Http\Controllers\Photo\PhotoCategoryController;
 use App\Http\Controllers\Photo\PhotoController;
 use App\Http\Controllers\Photo\PhotoTagController;
@@ -35,6 +36,8 @@ Route::group([
     Route::get('profile', [ProfileController::class, 'profile']);
     Route::get('refresh-token', [RefreshTokenController::class, 'refresh']);
     Route::get('logout', [LogoutController::class, 'logout']);
+    Route::post('verify-email', [VerifyUserEmailController::class, 'verifyUserEmail']);
+    Route::post('resend-email-verification-link', [VerifyUserEmailController::class, 'resendEmailVerificationLink']);
 
     Route::apiResource('photo', PhotoController::class);
     Route::apiResource('photo-category', PhotoCategoryController::class);
