@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Photo;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Photo\StorePhotoRequest;
 use App\Http\Requests\Photo\UpdatePhotoRequest;
+use App\Jobs\Photo\CompressPhotoJob;
 use App\Models\Photo\Photo;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -36,7 +37,7 @@ class PhotoController extends Controller
             $file = $request->file('photo');
             $filename = time() . '_' . $file->getClientOriginalName();
 
-            $filePath = $file->storeAs('public/photos', $filename);
+            $filePath = $file->storeAs('public/photos/original', $filename);
             $fileUrl = url(Storage::url($filePath));
 
             $photo->url = $fileUrl;
@@ -50,6 +51,8 @@ class PhotoController extends Controller
             if ($request->has('tags')) {
                 $photo->tags()->attach($request->input('tags'));
             }
+
+            CompressPhotoJob::dispatch($photo->id, $filePath);
 
             return $photo;
         }
