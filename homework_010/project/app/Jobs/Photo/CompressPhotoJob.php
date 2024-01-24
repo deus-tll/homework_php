@@ -71,10 +71,10 @@ class CompressPhotoJob implements ShouldQueue
         $manager = new ImageManager(new Driver());
         $quality = 80;
 
-        $image = $manager->read(storage_path('app/' . $originalFilePath));
+        $image = $manager->read(storage_path($originalFilePath));
         $image->scale(height: 300);
 
-        $image->save(storage_path('app/' . $compressedFilePath), $quality);
+        $image->save(storage_path($compressedFilePath), $quality);
     }
 
     /**
@@ -87,7 +87,7 @@ class CompressPhotoJob implements ShouldQueue
     {
         $photo = Photo::query()->findOrFail($this->photoId);
 
-        $photo->compressed_url = url(Storage::url($compressedFilePath));
+        $photo->thumb_url = url(Storage::url($compressedFilePath));
 
         $photo->save();
     }

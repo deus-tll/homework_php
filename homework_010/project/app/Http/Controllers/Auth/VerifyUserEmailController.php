@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Customs\Services\EmailVerificationService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ResendEmailVerificationLinkRequest;
 use App\Http\Requests\Auth\VerifyEmailRequest;
+use App\Services\EmailVerificationService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class VerifyUserEmailController extends Controller
 {

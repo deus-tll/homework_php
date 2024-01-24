@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Auth\Jwt;
 
-use App\Customs\Services\EmailVerificationService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Traits\JwtAuthTrait;
 use App\Models\User;
+use App\Services\EmailVerificationService;
 use Illuminate\Http\JsonResponse;
 
 class RegisterController extends Controller

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Photo;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Photo\StorePhotoRequest;
 use App\Http\Requests\Photo\UpdatePhotoRequest;
-use App\Jobs\Photo\CompressPhotoJob;
+use App\Jobs\Photo\OptimizeUploadPhotoJob;
 use App\Models\Photo\Photo;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class PhotoController extends Controller
@@ -34,16 +35,16 @@ class PhotoController extends Controller
         try {
             $photo = $request->getModelFromRequest();
 
-            $file = $request->file('photo');
-            $filename = time() . '_' . $file->getClientOriginalName();
-
-            $filePath = $file->storeAs('public/photos/original', $filename);
-            $fileUrl = url(Storage::url($filePath));
-
-            $photo->url = $fileUrl;
-
             $userId = $request->user()->id;
             $photo->user()->associate($userId);
+            $photo->save();
+
+            $file = $request->file('photo');
+            $extension = $file->getClientOriginalExtension();
+            $filename = $photo->id . '.original.' . $extension;
+            $filePath = $file->storeAs('user_id_' . $userId . '/photo_id_' . $photo->id, $filename);
+            $fileUrl = url(Storage::url($filePath));
+            $photo->url = $fileUrl;
 
             $photo->category()->associate($request->input('category_id'));
             $photo->save();
@@ -52,7 +53,12 @@ class PhotoController extends Controller
                 $photo->tags()->attach($request->input('tags'));
             }
 
-            CompressPhotoJob::dispatch($photo->id, $filePath);
+            try {
+                $photo->save();
+                OptimizeUploadPhotoJob::dispatch($photo->id);
+            } catch (\Exception $e) {
+                Log::error(__CLASS__ . '::' . __METHOD__, (array)$e->getMessage());
+            }
 
             return $photo;
         }
@@ -70,7 +76,7 @@ class PhotoController extends Controller
             return Photo::query()->with('category', 'tags')->findOrFail($id);
         }
         catch (ModelNotFoundException $e) {
-            return response()->json(['message' => 'Photo not found.', 'error' => $e->getMessage()], 404);
+            return response()->json(['message' => 'Photos not found.', 'error' => $e->getMessage()], 404);
         }
         catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -110,7 +116,7 @@ class PhotoController extends Controller
             return $photo;
         }
         catch (ModelNotFoundException $e) {
-            return response()->json(['message' => 'Photo not found.', 'error' => $e->getMessage()], 404);
+            return response()->json(['message' => 'Photos not found.', 'error' => $e->getMessage()], 404);
         }
         catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -130,10 +136,10 @@ class PhotoController extends Controller
 
             DB::commit();
 
-            return response()->json(['message' => 'Photo deleted successfully.']);
+            return response()->json(['message' => 'Photos deleted successfully.']);
         }
         catch (ModelNotFoundException $e) {
-            return response()->json(['message' => 'Photo not found.', 'error' => $e->getMessage()], 404);
+            return response()->json(['message' => 'Photos not found.', 'error' => $e->getMessage()], 404);
         }
         catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);

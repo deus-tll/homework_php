@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Customs\Services;
+namespace App\Services;
 
 use App\Models\EmailVerificationToken;
 use App\Models\User;
