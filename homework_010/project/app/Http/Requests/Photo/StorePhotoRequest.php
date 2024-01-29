@@ -33,6 +33,6 @@ class StorePhotoRequest extends FormRequest
 
     public function getModelFromRequest() : Photo
     {
-        return new Photo(($this->all()));
+        return new Photo($this->all());
     }
 }

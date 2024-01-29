@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Photo;
+namespace App\Http\Controllers\Old_Photo_Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Photo\StorePhotoRequest;
@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -76,7 +77,7 @@ class PhotoController extends Controller
             return Photo::query()->with('category', 'tags')->findOrFail($id);
         }
         catch (ModelNotFoundException $e) {
-            return response()->json(['message' => 'Photos not found.', 'error' => $e->getMessage()], 404);
+            return response()->json(['message' => 'Photo not found.', 'error' => $e->getMessage()], 404);
         }
         catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -102,12 +103,12 @@ class PhotoController extends Controller
             }
 
             if ($request->hasFile('photo')) {
+                $userId = $request->user()->id;
                 $file = $request->file('photo');
-                $filename = time() . '_' . $file->getClientOriginalName();
-
-                $filePath = $file->storeAs('public/photos', $filename);
+                $extension = $file->getClientOriginalExtension();
+                $filename = $photo->id . '.original.' . $extension;
+                $filePath = $file->storeAs('user_id_' . $userId . '/photo_id_' . $photo->id, $filename);
                 $fileUrl = url(Storage::url($filePath));
-
                 $photo->url = $fileUrl;
             }
 

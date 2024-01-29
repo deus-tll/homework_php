@@ -6,9 +6,12 @@ use App\Http\Controllers\Auth\Jwt\ProfileController;
 use App\Http\Controllers\Auth\Jwt\RefreshTokenController;
 use App\Http\Controllers\Auth\Jwt\RegisterController;
 use App\Http\Controllers\Auth\VerifyUserEmailController;
-use App\Http\Controllers\Photo\PhotoCategoryController;
-use App\Http\Controllers\Photo\PhotoController;
-use App\Http\Controllers\Photo\PhotoTagController;
+//use App\Http\Controllers\Old_Photo_Controllers\PhotoCategoryController;
+//use App\Http\Controllers\Old_Photo_Controllers\PhotoController;
+//use App\Http\Controllers\Old_Photo_Controllers\PhotoTagController;
+use App\Http\Controllers\Photos\PhotoCategoryController;
+use App\Http\Controllers\Photos\PhotoController;
+use App\Http\Controllers\Photos\PhotoTagController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

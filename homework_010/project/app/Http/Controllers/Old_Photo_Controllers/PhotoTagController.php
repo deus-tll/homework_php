@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Photo;
+namespace App\Http\Controllers\Old_Photo_Controllers;
 
 use App\Http\Controllers\Controller;
 
